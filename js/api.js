@@ -2,21 +2,75 @@
  * api.js — Data layer menggunakan LocalStorage
  */
 
-const DB_KEY_MENU = 'angkringan_menus';
-const DB_KEY_QUEUE = 'angkringan_queues';
-const DB_KEY_HISTORY = 'angkringan_history';
+/* ============================
+   HELPER FUNCTIONS
+   ============================ */
+function getData(key) {
+    try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+}
 
-// Default Data (Seed)
-const INITIAL_MENUS = [
-    { id: 1, nama: 'Chicken Crunchy Roll', harga: 15000, kategori: 'makanan' }
-];
+function setData(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+}
+
+function nextId(key) {
+    const items = getData(key);
+    if (items.length === 0) return 1;
+    return Math.max(...items.map(i => i.id)) + 1;
+}
+
+function todayStr() {
+    return new Date().toISOString().split('T')[0];
+}
+
+/* ============================
+   SEED DATA DEFAULT
+   ============================ */
+function seedDefaults() {
+    if (!localStorage.getItem('angkringan_users')) {
+        setData('angkringan_users', [
+            { id: 1, username: 'aril', password: 'ARIL007' }
+        ]);
+    }
+    if (!localStorage.getItem('angkringan_menus')) {
+        setData('angkringan_menus', [
+            { id: 1, nama: 'Chicken Crunchy Roll', harga: 15000, kategori: 'makanan' }
+        ]);
+    }
+}
+seedDefaults();
+
+/* ============================
+   STORAGE KEYS
+   ============================ */
+const DB_KEY_MENU    = 'angkringan_menus';
+const DB_KEY_QUEUE   = 'angkringan_queues';
+const DB_KEY_HISTORY = 'angkringan_history';
+const DB_KEY_USERS   = 'angkringan_users';
 
 const api = {
+
+    // === AUTH ===
+    login(body) {
+        return new Promise((resolve, reject) => {
+            const users = getData(DB_KEY_USERS);
+            const user = users.find(u =>
+                u.username === body.username && u.password === body.password
+            );
+            if (!user) { reject(new Error('Username atau password salah.')); return; }
+            const token = 'local_' + Date.now();
+            resolve({ token, user: { id: user.id, username: user.username }, message: 'Login berhasil.' });
+        });
+    },
+
     // === MENU ===
     getMenu: async () => {
         let menus = JSON.parse(localStorage.getItem(DB_KEY_MENU));
         if (!menus) {
-            menus = INITIAL_MENUS;
+            menus = [{ id: 1, nama: 'Chicken Crunchy Roll', harga: 15000, kategori: 'makanan' }];
             localStorage.setItem(DB_KEY_MENU, JSON.stringify(menus));
         }
         return menus;
