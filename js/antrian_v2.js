@@ -100,8 +100,8 @@ function renderAntrian() {
         btn.addEventListener('click', () => openPaymentModal(parseInt(btn.dataset.id))));
     container.querySelectorAll('.btn-tunai').forEach(btn =>
         btn.addEventListener('click', () => bayarTunai(parseInt(btn.dataset.id))));
-    container.querySelectorAll('.btn-selesai').forEach(btn =>
-        btn.addEventListener('click', () => selesaikanAntrian(parseInt(btn.dataset.id))));
+    container.querySelectorAll('.btn-batal').forEach(btn =>
+        btn.addEventListener('click', () => batalkanAntrian(parseInt(btn.dataset.id))));
 }
 
 function antrianCardHTML(antrian) {
@@ -136,8 +136,8 @@ function antrianCardHTML(antrian) {
                     QRIS
                 </button>
                 <button class="btn btn-primary btn-sm flex-1 btn-tunai" data-id="${antrian.id}">Tunai</button>
-                <button class="btn btn-ghost btn-sm btn-selesai" data-id="${antrian.id}" title="Selesai">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <button class="btn btn-danger btn-sm btn-batal" data-id="${antrian.id}" title="Batal" style="padding: 0 8px; min-width: auto; font-size: 10px; font-weight: 700;">
+                    BATAL
                 </button>
             </div>
         </div>`;
@@ -446,17 +446,11 @@ async function bayarTunai(id) {
     } catch (err) { showToast(err.message, 'error'); }
 }
 
-async function selesaikanAntrian(id) {
-    const a = antrianList.find(x => x.id === id);
-    if (!confirm('Selesaikan antrian ini?')) return;
+async function batalkanAntrian(id) {
+    if (!confirm('Batalkan antrian ini?')) return;
     try {
-        await api.updateQueueStatus(id, 'selesai');
         await api.deleteQueue(id);
-        if (a) {
-            const pesananStr = a.menus.map(m => `${m.nama} (x${m.jumlah})`).join(', ');
-            LaporanManager.tambahData(a.nama_pelanggan, pesananStr, a.total, 'Selesai Manual');
-        }
-        showToast('Antrian diselesaikan.', 'success');
+        showToast('Antrian dibatalkan.', 'info');
         await loadAntrian();
     } catch (err) { showToast(err.message, 'error'); }
 }
