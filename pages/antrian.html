@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="Manajemen antrian pelanggan dan pembayaran QRIS angkringan">
+    <title>Antrian — Angkringan Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/antrian.css">
+</head>
+<body>
+
+<div class="page-wrapper">
+
+    <!-- PAGE HEADER -->
+    <header class="page-header">
+        <h1 class="page-header-title">Antrian</h1>
+        <button id="btn-add-antrian" class="btn btn-primary btn-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Tambah
+        </button>
+    </header>
+
+    <!-- ANTRIAN LIST -->
+    <main class="content-area" style="padding-top:var(--space-4)">
+        <div id="antrian-list">
+            <div class="empty-state">
+                <p class="text-muted text-sm">Memuat antrian...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+        <a href="dashboard.html" class="nav-item" id="nav-dashboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            Dashboard
+        </a>
+        <a href="antrian.html" class="nav-item active" id="nav-antrian">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+            Antrian
+        </a>
+        <a href="menu.html" class="nav-item" id="nav-menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3h18v4H3z"/><path d="M3 9h18v12H3z"/>
+            </svg>
+            Menu
+        </a>
+        <a href="riwayat.html" class="nav-item" id="nav-riwayat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="12 8 12 12 14 14"/>
+                <circle cx="12" cy="12" r="10"/>
+            </svg>
+            Riwayat
+        </a>
+    </nav>
+
+</div> <!-- End page-wrapper -->
+
+<!-- ====== MODAL TAMBAH ANTRIAN ====== -->
+<div class="modal-overlay" id="antrian-overlay" role="dialog" aria-modal="true" aria-labelledby="antrian-modal-title">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 class="modal-title" id="antrian-modal-title">Tambah Antrian</h2>
+            <button class="modal-close" id="btn-close-antrian" aria-label="Tutup">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Nama pelanggan -->
+        <div class="form-group">
+            <label class="form-label" for="input-nama-pelanggan">Nama Pelanggan</label>
+            <input type="text" id="input-nama-pelanggan" class="form-control" placeholder="Contoh: Budi" maxlength="150" autocomplete="off">
+        </div>
+
+        <!-- Pilih menu -->
+        <div class="menu-select-section">
+            <label class="form-label">Pilih Menu</label>
+            <div id="menu-select-group" class="menu-select-group">
+                <p class="text-muted text-sm">Memuat menu...</p>
+            </div>
+        </div>
+
+        <!-- Order summary -->
+        <div id="order-summary" class="order-summary hidden">
+            <div id="order-items-preview"></div>
+            <div class="order-summary-total">
+                <span>Total</span>
+                <span id="order-total" class="rupiah">Rp 0</span>
+            </div>
+        </div>
+
+        <button id="btn-submit-antrian" class="btn btn-primary btn-full mt-4">
+            Tambah Antrian
+        </button>
+    </div>
+</div>
+
+<!-- ====== MODAL QRIS PEMBAYARAN ====== -->
+<div class="modal-overlay qris-modal" id="qris-overlay" role="dialog" aria-modal="true" aria-labelledby="qris-modal-title">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 class="modal-title" id="qris-modal-title">Pembayaran QRIS</h2>
+            <button class="modal-close" id="btn-close-qris-modal" aria-label="Tutup">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="qris-wrapper">
+            <div class="qris-header">
+                <div class="qris-label">Total Pembayaran</div>
+                <div class="qris-amount rupiah" id="qris-amount">Rp 0</div>
+                <div class="qris-customer" id="qris-customer">—</div>
+            </div>
+
+            <div class="qr-container">
+                <div class="qr-frame">
+                    <div id="qr-code"></div>
+                </div>
+            </div>
+
+            <p class="qris-instruction">
+                Tunjukkan QR Code ini kepada pelanggan.<br>
+                Scan menggunakan aplikasi m-banking atau e-wallet apapun.
+            </p>
+
+            <div class="qris-actions">
+                <button id="btn-konfirmasi-bayar" class="btn btn-success btn-full">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    Konfirmasi Bayar
+                </button>
+                <button id="btn-batal-bayar" class="btn btn-ghost">
+                    Batal
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { requireAuth } from '../js/auth.js';
+    import { loadAntrian, loadMenuForForm, openAddAntrianModal, submitAntrian, konfirmasiPembayaran } from '../js/antrian.js';
+    import { closeModal } from '../js/utils.js';
+
+    if (!requireAuth()) throw new Error('Not authenticated');
+
+    // Init
+    await Promise.all([loadAntrian(), loadMenuForForm()]);
+
+    // Tambah antrian
+    document.getElementById('btn-add-antrian').addEventListener('click', openAddAntrianModal);
+    document.getElementById('btn-submit-antrian').addEventListener('click', submitAntrian);
+
+    // Close modals
+    document.getElementById('btn-close-antrian').addEventListener('click', () => closeModal('antrian'));
+    document.getElementById('btn-close-qris-modal').addEventListener('click', () => closeModal('qris'));
+    document.getElementById('btn-batal-bayar').addEventListener('click', () => closeModal('qris'));
+
+    // Click overlay untuk tutup
+    document.getElementById('antrian-overlay').addEventListener('click', e => {
+        if (e.target === e.currentTarget) closeModal('antrian');
+    });
+    document.getElementById('qris-overlay').addEventListener('click', e => {
+        if (e.target === e.currentTarget) closeModal('qris');
+    });
+
+    // Konfirmasi bayar
+    document.getElementById('btn-konfirmasi-bayar').addEventListener('click', konfirmasiPembayaran);
+
+    // Auto-refresh antrian setiap 15 detik
+    setInterval(loadAntrian, 15000);
+</script>
+
+</body>
+</html>

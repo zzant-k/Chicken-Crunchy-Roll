@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="Riwayat Transaksi Harian dan Ekspor PDF">
+    <title>Riwayat — Angkringan Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+
+<div class="page-wrapper">
+
+    <!-- PAGE HEADER -->
+    <header class="page-header">
+        <h1 class="page-header-title">Riwayat Transaksi</h1>
+        <button id="btn-export-pdf" class="btn btn-primary btn-sm" style="display:flex;gap:4px;align-items:center;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            Unduh PDF
+        </button>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="content-area">
+        <div id="riwayat-list" style="display:flex;flex-direction:column;gap:var(--space-3);">
+            <div class="empty-state">
+                <p class="text-muted text-sm">Memuat riwayat...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+        <a href="dashboard.html" class="nav-item" id="nav-dashboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            Dashboard
+        </a>
+        <a href="antrian.html" class="nav-item" id="nav-antrian">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+            Antrian
+        </a>
+        <a href="menu.html" class="nav-item" id="nav-menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3h18v4H3z"/><path d="M3 9h18v12H3z"/>
+            </svg>
+            Menu
+        </a>
+        <a href="riwayat.html" class="nav-item active" id="nav-riwayat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="12 8 12 12 14 14"/>
+                <circle cx="12" cy="12" r="10"/>
+            </svg>
+            Riwayat
+        </a>
+    </nav>
+
+</div>
+
+<!-- ====== MODAL DETAIL PESANAN ====== -->
+<div class="modal-overlay" id="detail-overlay" role="dialog" aria-modal="true" aria-labelledby="detail-modal-title">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 class="modal-title" id="detail-modal-title">Detail Pesanan</h2>
+            <button class="modal-close" id="btn-close-detail" aria-label="Tutup">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div id="detail-content" style="font-size:var(--font-size-sm);color:var(--color-text);">
+            <!-- Konten detail disisipkan oleh JS -->
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { requireAuth } from '../js/auth.js';
+    import api from '../js/api.js';
+    import { escHtml, formatRupiah, formatTime, showToast, openModal, closeModal } from '../js/utils.js';
+
+    if (!requireAuth()) throw new Error('Not authenticated');
+
+    let transaksis = [];
+
+    async function loadRiwayat() {
+        try {
+            transaksis = await api.getTransaksi();
+            const container = document.getElementById('riwayat-list');
+
+            if (transaksis.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <polyline points="12 8 12 12 14 14"/><circle cx="12" cy="12" r="10"/>
+                        </svg>
+                        <p>Belum ada riwayat hari ini.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = transaksis.map(t => {
+                const nomor = t.antrian ? t.antrian.nomor_antrian : '-';
+                const nama  = t.antrian ? t.antrian.nama_pelanggan : 'Terhapus';
+                return `
+                <div class="card" style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3);cursor:pointer;" data-id="${t.id}" id="riwayat-item-${t.id}">
+                    <div style="width:32px;height:32px;border-radius:var(--radius-sm);background:var(--color-surface-2);border:1px solid var(--color-border);color:var(--color-text);font-weight:700;font-size:var(--font-size-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        ${nomor}
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-weight:600;font-size:var(--font-size-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--color-text);">
+                            ${escHtml(nama)}
+                        </div>
+                        <div style="font-size:11px;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-top:2px;">
+                            ${formatTime(t.created_at)} &bull; ${escHtml(t.bayar_via || 'Manual')}
+                        </div>
+                    </div>
+                    <div style="font-weight:600;font-size:var(--font-size-sm);color:var(--color-success);white-space:nowrap;" class="rupiah">
+                        ${formatRupiah(t.total)}
+                    </div>
+                </div>`;
+            }).join('');
+
+            // Bind klik untuk detail
+            container.querySelectorAll('[data-id]').forEach(el => {
+                el.addEventListener('click', () => showDetail(parseInt(el.dataset.id)));
+            });
+
+        } catch (err) {
+            console.error('Gagal load riwayat:', err);
+            showToast('Gagal memuat riwayat.', 'error');
+        }
+    }
+
+    function showDetail(id) {
+        const t = transaksis.find(x => x.id === id);
+        if (!t) return;
+
+        const menus = t.antrian && t.antrian.menus ? t.antrian.menus : [];
+        const detailHtml = menus.map(m => `
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid var(--color-surface-2);">
+                <div>${m.pivot?.jumlah || 1}x ${escHtml(m.nama)}</div>
+                <div>${formatRupiah(m.harga * (m.pivot?.jumlah || 1))}</div>
+            </div>
+        `).join('');
+
+        const nama = t.antrian ? t.antrian.nama_pelanggan : 'Terhapus';
+
+        document.getElementById('detail-content').innerHTML = `
+            <div style="margin-bottom:16px;padding:12px;background:var(--color-surface-2);border-radius:var(--radius-sm);">
+                <div style="margin-bottom:4px;"><strong>Pelanggan:</strong> ${escHtml(nama)}</div>
+                <div style="margin-bottom:4px;"><strong>Waktu Selesai:</strong> ${formatTime(t.created_at)}</div>
+                <div style="margin-bottom:4px;"><strong>Metode:</strong> ${escHtml(t.bayar_via || 'Manual')}</div>
+            </div>
+            <div style="font-weight:600;margin-bottom:8px;">Pesanan:</div>
+            ${detailHtml || '<div>-</div>'}
+            <div style="display:flex;justify-content:space-between;margin-top:16px;padding-top:8px;border-top:1px dashed var(--color-border);font-weight:700;font-size:var(--font-size-md);color:var(--color-primary);">
+                <span>Total</span>
+                <span class="rupiah">${formatRupiah(t.total)}</span>
+            </div>`;
+        openModal('detail');
+    }
+
+    // Export PDF
+    document.getElementById('btn-export-pdf').addEventListener('click', async () => {
+        const btn = document.getElementById('btn-export-pdf');
+        btn.disabled = true;
+        btn.textContent = 'Mengunduh...';
+        try {
+            await api.exportPdf();
+            showToast('Laporan berhasil dibuka untuk dicetak.', 'success');
+        } catch (err) {
+            showToast(err.message || 'Gagal mengunduh laporan.', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Unduh PDF`;
+        }
+    });
+
+    // Close modal
+    document.getElementById('btn-close-detail').addEventListener('click', () => closeModal('detail'));
+    document.getElementById('detail-overlay').addEventListener('click', e => {
+        if (e.target === e.currentTarget) closeModal('detail');
+    });
+
+    // Init
+    loadRiwayat();
+</script>
+
+</body>
+</html>

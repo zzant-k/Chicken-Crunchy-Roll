@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="Dashboard ringkasan admin angkringan">
+    <title>Dashboard — Angkringan Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+
+<div class="page-wrapper">
+
+    <!-- TOP BAR -->
+    <header class="dashboard-topbar">
+        <div class="topbar-greeting">
+            <h2>Selamat Datang</h2>
+            <p id="topbar-username">Admin</p>
+        </div>
+        <button class="topbar-logout" id="btn-logout" title="Logout" aria-label="Logout">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+        </button>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="content-area">
+
+        <!-- STAT CARDS -->
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                </div>
+                <div class="stat-value" id="stat-antrian">—</div>
+                <div class="stat-label">Antrian Aktif</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                    </svg>
+                </div>
+                <div class="stat-value" id="stat-transaksi-count">—</div>
+                <div class="stat-label">Transaksi Hari Ini</div>
+            </div>
+            <div class="stat-card full-width">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                        <line x1="1" y1="10" x2="23" y2="10"/>
+                    </svg>
+                </div>
+                <div class="stat-value rupiah" id="stat-total">—</div>
+                <div class="stat-label">Total Pendapatan Hari Ini</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3h18v4H3z"/><path d="M3 9h18v12H3z"/>
+                    </svg>
+                </div>
+                <div class="stat-value" id="stat-menu">—</div>
+                <div class="stat-label">Total Menu</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                </div>
+                <div class="stat-value" id="stat-time">—</div>
+                <div class="stat-label">Jam Saat Ini</div>
+            </div>
+        </div>
+
+        <!-- QUICK ACTIONS -->
+        <p class="section-title">Akses Cepat</p>
+        <div class="quick-actions">
+            <a href="antrian.html" class="quick-action-btn" id="qa-antrian">
+                <div class="qa-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                </div>
+                <span class="qa-label">Kelola Antrian</span>
+            </a>
+            <a href="menu.html" class="quick-action-btn" id="qa-menu">
+                <div class="qa-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3h18v4H3z"/><path d="M3 9h18v12H3z"/>
+                    </svg>
+                </div>
+                <span class="qa-label">Kelola Menu</span>
+            </a>
+        </div>
+
+        <!-- ANTRIAN PREVIEW -->
+        <p class="section-title">Antrian Aktif</p>
+        <div id="antrian-preview" class="antrian-preview-list">
+            <div class="empty-state">
+                <p class="text-muted text-sm">Memuat...</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+        <a href="dashboard.html" class="nav-item active" id="nav-dashboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            Dashboard
+        </a>
+        <a href="antrian.html" class="nav-item" id="nav-antrian">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+            Antrian
+        </a>
+        <a href="menu.html" class="nav-item" id="nav-menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3h18v4H3z"/><path d="M3 9h18v12H3z"/>
+            </svg>
+            Menu
+        </a>
+        <a href="riwayat.html" class="nav-item" id="nav-riwayat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="12 8 12 12 14 14"/>
+                <circle cx="12" cy="12" r="10"/>
+            </svg>
+            Riwayat
+        </a>
+    </nav>
+
+</div>
+
+<script type="module">
+    import { requireAuth, logout, getUser } from '../js/auth.js';
+    import api from '../js/api.js';
+    import { formatRupiah } from '../js/utils.js';
+
+    if (!requireAuth()) throw new Error('Not authenticated');
+
+    // Tampilkan username
+    const user = getUser();
+    if (user) document.getElementById('topbar-username').textContent = user.username;
+
+    // Jam real-time
+    function updateTime() {
+        const el = document.getElementById('stat-time');
+        if (el) el.textContent = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    }
+    updateTime();
+    setInterval(updateTime, 60000);
+
+    // Load stats
+    async function loadStats() {
+        try {
+            const queues = await api.getQueues();
+            const history = await api.getHistory();
+            const menus = await api.getMenu();
+
+            const today = new Date().toISOString().split('T')[0];
+            const historyToday = history.filter(h => h.completedAt && h.completedAt.startsWith(today));
+            const totalTransaksiHariIni = historyToday.reduce((sum, h) => sum + (h.total || 0), 0);
+
+            const antrianAktif = queues.filter(q => q.status !== 'selesai').length;
+
+            document.getElementById('stat-antrian').textContent          = antrianAktif;
+            document.getElementById('stat-transaksi-count').textContent  = history.length;
+            document.getElementById('stat-total').textContent            = formatRupiah(totalTransaksiHariIni);
+            document.getElementById('stat-menu').textContent             = menus.length;
+        } catch (err) {
+            console.error('Gagal load stats:', err);
+        }
+    }
+
+    // Load antrian preview
+    async function loadAntrianPreview() {
+        try {
+            const queues = await api.getQueues();
+            const antrians = queues.filter(q => q.status !== 'selesai');
+            const container = document.getElementById('antrian-preview');
+
+            if (antrians.length === 0) {
+                container.innerHTML = '<p class="text-muted text-sm text-center" style="padding:16px">Tidak ada antrian aktif.</p>';
+                return;
+            }
+
+            container.innerHTML = antrians.slice(0, 5).map(a => `
+                <div class="antrian-preview-item">
+                    <div class="antrian-num">${a.noAntrian || '-'}</div>
+                    <div class="antrian-info">
+                        <div class="antrian-name">${a.nama_pelanggan || '-'}</div>
+                        <div class="antrian-menu-count">${a.menus ? a.menus.length : 0} item</div>
+                    </div>
+                    <div class="antrian-total rupiah">${formatRupiah(a.total || 0)}</div>
+                </div>`).join('');
+        } catch (err) {
+            console.error('Gagal load antrian:', err);
+        }
+    }
+
+    // Logout
+    document.getElementById('btn-logout').addEventListener('click', async () => {
+        if (confirm('Yakin ingin logout?')) await logout();
+    });
+
+    // Init
+    await Promise.all([loadStats(), loadAntrianPreview()]);
+
+    // Auto-refresh setiap 30 detik
+    setInterval(() => Promise.all([loadStats(), loadAntrianPreview()]), 30000);
+</script>
+
+</body>
+</html>
