@@ -1,13 +1,13 @@
-# Panduan Rekonstruksi Proyek Angkringan Admin (localStorage, Tanpa Backend)
+# Panduan Rekonstruksi Proyek Chicken-Crunchy-Roll Admin (localStorage, Tanpa Backend)
 
-Dokumen ini berisi **seluruh kode** yang diperlukan untuk membangun ulang proyek **Angkringan Admin Dashboard** tanpa Laravel dan tanpa database. Semua data disimpan di **localStorage** browser.
+Dokumen ini berisi **seluruh kode** yang diperlukan untuk membangun ulang proyek **Chicken-Crunchy-Roll Admin Dashboard** tanpa Laravel dan tanpa database. Semua data disimpan di **localStorage** browser.
 
 ---
 
 ## 1. Struktur Folder
 
 ```
-angkringan/
+Chicken-Crunchy-Roll/
 ├── index.html              ← Halaman Login
 ├── pages/
 │   ├── dashboard.html
@@ -101,14 +101,14 @@ function todayStr() {
    SEED DATA DEFAULT
    ============================ */
 function seedDefaults() {
-    if (!localStorage.getItem('angkringan_users')) {
-        setData('angkringan_users', [
+    if (!localStorage.getItem('Chicken-Crunchy-Roll_users')) {
+        setData('Chicken-Crunchy-Roll_users', [
             { id: 1, username: 'admin', password: 'admin123' }
         ]);
     }
-    if (!localStorage.getItem('angkringan_menus'))      setData('angkringan_menus', []);
-    if (!localStorage.getItem('angkringan_antrians'))    setData('angkringan_antrians', []);
-    if (!localStorage.getItem('angkringan_transaksis'))  setData('angkringan_transaksis', []);
+    if (!localStorage.getItem('Chicken-Crunchy-Roll_menus'))      setData('Chicken-Crunchy-Roll_menus', []);
+    if (!localStorage.getItem('Chicken-Crunchy-Roll_antrians'))    setData('Chicken-Crunchy-Roll_antrians', []);
+    if (!localStorage.getItem('Chicken-Crunchy-Roll_transaksis'))  setData('Chicken-Crunchy-Roll_transaksis', []);
 }
 seedDefaults();
 
@@ -116,10 +116,10 @@ seedDefaults();
    STORAGE KEYS
    ============================ */
 const KEYS = {
-    users:      'angkringan_users',
-    menus:      'angkringan_menus',
-    antrians:   'angkringan_antrians',
-    transaksis: 'angkringan_transaksis',
+    users:      'Chicken-Crunchy-Roll_users',
+    menus:      'Chicken-Crunchy-Roll_menus',
+    antrians:   'Chicken-Crunchy-Roll_antrians',
+    transaksis: 'Chicken-Crunchy-Roll_transaksis',
 };
 
 /* ============================
@@ -316,7 +316,7 @@ const api = {
         th,td{border:1px solid #ddd;padding:6px;text-align:left;vertical-align:top}
         th{background:#f3f4f6;font-weight:bold}
         .footer{margin-top:24px;text-align:center;font-size:10px;color:#999}</style></head>
-        <body><h1>Laporan Harian Angkringan</h1>
+        <body><h1>Laporan Harian Chicken-Crunchy-Roll</h1>
         <p class="sub">Tanggal: ${new Date().toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' })}</p>
         <p><strong>Total Pendapatan:</strong> Rp ${totalPendapatan.toLocaleString('id-ID')} | <strong>Jumlah Transaksi:</strong> ${transaksis.length}</p>
         <table><thead><tr><th>No</th><th>Waktu</th><th>Pelanggan</th><th>Pesanan</th><th>Total</th></tr></thead>
@@ -345,8 +345,8 @@ export default api;
 ```javascript
 import api from './api.js';
 
-const TOKEN_KEY = 'angkringan_token';
-const USER_KEY  = 'angkringan_user';
+const TOKEN_KEY = 'Chicken-Crunchy-Roll_token';
+const USER_KEY  = 'Chicken-Crunchy-Roll_user';
 
 export async function login(username, password) {
     const data = await api.login({ username, password });
@@ -463,7 +463,7 @@ export function generateQR(total) {
     const container = document.getElementById('qr-code');
     if (!container) return;
     container.innerHTML = '';
-    const payload = `QRIS.ID|ANGKRINGAN.KU|TOTAL:${Math.round(total)}|${Date.now()}`;
+    const payload = `QRIS.ID|Chicken-Crunchy-Roll.KU|TOTAL:${Math.round(total)}|${Date.now()}`;
     if (typeof QRCode === 'undefined') {
         container.innerHTML = '<p style="color:var(--color-text-muted);font-size:12px;">QR Code tidak tersedia.</p>';
         return;
@@ -550,7 +550,7 @@ File CSS **tidak perlu diubah sama sekali**. Salin langsung dari proyek asli:
 
 ## 8. Struktur Data di localStorage
 
-### Key: `angkringan_menus`
+### Key: `Chicken-Crunchy-Roll_menus`
 ```json
 [
   { "id": 1, "nama": "Nasi Goreng", "harga": 12000, "kategori": "makanan" },
@@ -558,7 +558,7 @@ File CSS **tidak perlu diubah sama sekali**. Salin langsung dari proyek asli:
 ]
 ```
 
-### Key: `angkringan_antrians`
+### Key: `Chicken-Crunchy-Roll_antrians`
 ```json
 [
   {
@@ -571,7 +571,7 @@ File CSS **tidak perlu diubah sama sekali**. Salin langsung dari proyek asli:
 ]
 ```
 
-### Key: `angkringan_transaksis`
+### Key: `Chicken-Crunchy-Roll_transaksis`
 ```json
 [
   {
@@ -582,7 +582,7 @@ File CSS **tidak perlu diubah sama sekali**. Salin langsung dari proyek asli:
 ]
 ```
 
-### Key: `angkringan_users`
+### Key: `Chicken-Crunchy-Roll_users`
 ```json
 [{ "id": 1, "username": "admin", "password": "admin123" }]
 ```

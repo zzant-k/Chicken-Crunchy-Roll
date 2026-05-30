@@ -4,12 +4,12 @@
  */
 import api from './api.js';
 
-const TOKEN_KEY = 'angkringan_token';
-const USER_KEY  = 'angkringan_user';
+const TOKEN_KEY = 'Chicken-Crunchy-Roll_token';
+const USER_KEY  = 'Chicken-Crunchy-Roll_user';
 
 /**
  * Hitung base URL folder root project secara otomatis.
- * Bekerja baik dari /angkringanku/ maupun dari subfolder /pages/.
+ * Bekerja baik dari /Chicken-Crunchy-Rollku/ maupun dari subfolder /pages/.
  */
 export function getBaseUrl() {
     const path = window.location.pathname;

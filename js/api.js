@@ -30,13 +30,13 @@ function todayStr() {
    SEED DATA DEFAULT
    ============================ */
 function seedDefaults() {
-    if (!localStorage.getItem('angkringan_users')) {
-        setData('angkringan_users', [
+    if (!localStorage.getItem('Chicken-Crunchy-Roll_users')) {
+        setData('Chicken-Crunchy-Roll_users', [
             { id: 1, username: 'aril', password: 'ARIL007' }
         ]);
     }
-    if (!localStorage.getItem('angkringan_menus')) {
-        setData('angkringan_menus', [
+    if (!localStorage.getItem('Chicken-Crunchy-Roll_menus')) {
+        setData('Chicken-Crunchy-Roll_menus', [
             { id: 1, nama: 'Chicken Crunchy Roll', harga: 15000, kategori: 'makanan' }
         ]);
     }
@@ -46,10 +46,10 @@ seedDefaults();
 /* ============================
    STORAGE KEYS
    ============================ */
-const DB_KEY_MENU    = 'angkringan_menus';
-const DB_KEY_QUEUE   = 'angkringan_queues';
-const DB_KEY_HISTORY = 'angkringan_history';
-const DB_KEY_USERS   = 'angkringan_users';
+const DB_KEY_MENU    = 'Chicken-Crunchy-Roll_menus';
+const DB_KEY_QUEUE   = 'Chicken-Crunchy-Roll_queues';
+const DB_KEY_HISTORY = 'Chicken-Crunchy-Roll_history';
+const DB_KEY_USERS   = 'Chicken-Crunchy-Roll_users';
 
 const api = {
 

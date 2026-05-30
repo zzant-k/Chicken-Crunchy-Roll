@@ -5,7 +5,7 @@ export function generateQR(total) {
     const container = document.getElementById('qr-code');
     if (!container) return;
     container.innerHTML = '';
-    const payload = `QRIS.ID|ANGKRINGAN.KU|TOTAL:${Math.round(total)}|${Date.now()}`;
+    const payload = `QRIS.ID|Chicken-Crunchy-Roll.KU|TOTAL:${Math.round(total)}|${Date.now()}`;
     if (typeof QRCode === 'undefined') {
         container.innerHTML = '<p style="color:var(--color-text-muted);font-size:12px;">QR Code tidak tersedia.</p>';
         return;
