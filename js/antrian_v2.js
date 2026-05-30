@@ -48,7 +48,16 @@ function getCrunchyVariantName(menuId) {
     let name = `${ukuran} · ${varian}`;
     if (varian.includes('Filling')) name += ` (${document.getElementById(`select-filling-${menuId}`)?.value || ''})`;
     if (varian.includes('Saus'))    name += ` (${document.getElementById(`select-saus-${menuId}`)?.value || ''})`;
-    if (varian.includes('Bumbu'))   name += ` (${document.getElementById(`select-bumbu-${menuId}`)?.value || ''})`;
+    if (varian.includes('Bumbu')) {
+        let bumbuVal = document.getElementById(`select-bumbu-${menuId}`)?.value || '';
+        if (bumbuVal === 'Mix') {
+            const mixNote = document.getElementById(`input-bumbu-mix-${menuId}`)?.value || '';
+            if (mixNote) {
+                bumbuVal += ` - ${mixNote}`;
+            }
+        }
+        name += ` (${bumbuVal})`;
+    }
     return name;
 }
 
@@ -56,7 +65,15 @@ function updateVariantUI(menuId) {
     const varian = document.querySelector(`input[name="varian-${menuId}"]:checked`)?.value || '';
     document.getElementById(`group-filling-${menuId}`)?.classList.toggle('hidden', !varian.includes('Filling'));
     document.getElementById(`group-saus-${menuId}`)?.classList.toggle('hidden', !varian.includes('Saus'));
-    document.getElementById(`group-bumbu-${menuId}`)?.classList.toggle('hidden', !varian.includes('Bumbu'));
+    
+    const isBumbu = varian.includes('Bumbu');
+    document.getElementById(`group-bumbu-${menuId}`)?.classList.toggle('hidden', !isBumbu);
+    
+    const bumbuSelect = document.getElementById(`select-bumbu-${menuId}`);
+    const mixInputGroup = document.getElementById(`group-bumbu-mix-${menuId}`);
+    if (bumbuSelect && mixInputGroup) {
+        mixInputGroup.classList.toggle('hidden', !(isBumbu && bumbuSelect.value === 'Mix'));
+    }
 
     // Update harga preview
     const isCrunchy = document.querySelector(`[data-id="${menuId}"]`)?.dataset?.nama?.toLowerCase().includes('chicken crunchy');
@@ -214,14 +231,21 @@ function menuPickerHTML(menu) {
                 <div class="variant-group hidden" id="group-saus-${menu.id}">
                     <div class="cvp-label">Pilihan Saus</div>
                     <select class="variant-select" id="select-saus-${menu.id}">
-                        <option>Keju</option><option>BBQ Spicy</option><option>Lada Hitam</option><option>Teriyaki</option>
+                        <option>Keju</option>
+                        <option>BBQ Spicy</option>
+                        <option>Sadis</option>
+                        <option>Lada Hitam</option>
+                        <option>Teriyaki</option>
                     </select>
                 </div>
                 <div class="variant-group hidden" id="group-bumbu-${menu.id}">
                     <div class="cvp-label">Pilihan Bumbu</div>
                     <select class="variant-select" id="select-bumbu-${menu.id}">
-                        <option>Balado</option><option>Keju</option><option>Jagung Manis</option><option>Spicy</option>
+                        <option>Balado</option><option>Keju</option><option>Jagung Manis</option><option>Spicy</option><option>Mix</option>
                     </select>
+                </div>
+                <div class="variant-group hidden" id="group-bumbu-mix-${menu.id}" style="margin-top: 8px;">
+                    <input type="text" class="variant-select" id="input-bumbu-mix-${menu.id}" placeholder="Catatan (mis: Balado + Keju)" style="width: 100%; box-sizing: border-box; font-size: 13px;">
                 </div>
             </div>`;
     }
@@ -353,6 +377,8 @@ export function openAddAntrianModal() {
     document.querySelectorAll('input[type="radio"][value="Original"]').forEach(r => r.checked = true);
     menuList.forEach(m => {
         if (m.nama.toLowerCase().includes('chicken crunchy')) {
+            const mixInput = document.getElementById(`input-bumbu-mix-${m.id}`);
+            if (mixInput) mixInput.value = '';
             updateVariantUI(m.id);
         }
     });

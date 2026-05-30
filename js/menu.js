@@ -29,8 +29,8 @@ const DEFAULT_PRICES = {
     ],
     pilihan: {
         filling: ['Keju', 'Garlic Creamy', 'Mentai'],
-        saus:    ['Keju', 'BBQ Spicy', 'Lada Hitam', 'Teriyaki'],
-        bumbu:   ['Balado', 'Keju', 'Jagung Manis', 'Spicy'],
+        saus:    ['Keju', 'BBQ Spicy', 'Sadis', 'Lada Hitam', 'Teriyaki'],
+        bumbu:   ['Balado', 'Keju', 'Jagung Manis', 'Spicy' , 'Mix'],
     }
 };
 
@@ -38,7 +38,13 @@ const DEFAULT_PRICES = {
 function getPrices() {
     try {
         const saved = localStorage.getItem(STORAGE_KEY);
-        return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_PRICES));
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            // Selalu gunakan pilihan dari default (kode) agar jika ada rasa baru, otomatis terupdate
+            parsed.pilihan = JSON.parse(JSON.stringify(DEFAULT_PRICES.pilihan));
+            return parsed;
+        }
+        return JSON.parse(JSON.stringify(DEFAULT_PRICES));
     } catch {
         return JSON.parse(JSON.stringify(DEFAULT_PRICES));
     }
